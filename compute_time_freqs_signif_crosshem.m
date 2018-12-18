@@ -2,7 +2,7 @@
 data_location = TFR_Clustered_Data;
 save_data_location = Stats_data;
 
-% Condition name
+% Condition name !
 Condition_Name = condition_label;
 
 % Channel list
