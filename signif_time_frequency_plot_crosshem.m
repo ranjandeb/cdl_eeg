@@ -4,7 +4,7 @@ data_location = Stats_data;
 
 cd(data_location)
 
-% Condition name
+% Condition name !
 Condition_Name = condition_label;
 
 % Channel list
