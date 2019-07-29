@@ -3,12 +3,10 @@
 % Parameters
 %       study_info = study information structure (created with
 %          init_study_info)
-%       preprocessing_info = table of preprocessing information
-% Returns
-%       preprocessing_info = table of preprocessing information updated
-%          with number of trials per condition added
-function preprocessing_info=compute_trials_per_condition(study_info,...
-    preprocessing_info)
+function compute_trials_per_condition(study_info)
+
+preprocessing_info=readtable(fullfile(study_info.output_dir,...
+    'preprocessing_info.csv'));
 
 for s=1:size(study_info.participant_info,1)
     
@@ -55,3 +53,6 @@ for s=1:size(study_info.participant_info,1)
         preprocessing_info.(sprintf('%sConditionNumTrials', study_info.experimental_conditions{cond_idx}))(s)=length(cond_epochs);
     end
 end
+
+writetable(preprocessing_info, fullfile(study_info.output_dir,...
+    'preprocessing_info.csv'));

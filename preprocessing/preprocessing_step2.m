@@ -86,15 +86,13 @@ for s=1:size(study_info.participant_info,1)
     EEG=label_trial_events(study_info, EEG);
     
     % Mark bad trials based on video coding
-    preprocessing_info.InitialNumTrials(s)=length(EEG_epochs.epoch);
     if ~isempty(study_info.mark_bad_trials)
         for j=1:length(study_info.mark_bad_trials)
             eval(sprintf('[EEG, preprocessing_info]=%s(study_info, s, EEG, preprocessing_info);',...
                 study_info.mark_bad_trials{j}));
         end
     end
-    preprocessing_info.PostVideoRejNumTrials(s)=length(EEG_epochs.epoch)-length(bad_trials);
- 
+     
     % Give a name to the dataset and save on hard drive
     EEG = eeg_checkset(EEG);
     base_name=sprintf('%s_07_Component_Removed_and_VideobasedExcl',...

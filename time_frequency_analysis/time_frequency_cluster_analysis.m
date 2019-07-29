@@ -40,7 +40,7 @@ for cond = 1:length(study_info.experimental_conditions)
         % Get subject ID from study info
         subject=study_info.participant_info.participant_id{s};
 
-	% If subject not excluded
+        % If subject not excluded
         if find(strcmp(included, subject))
             % Where to put processed (derived) data
             subject_output_data_dir=fullfile(study_info.output_dir,...

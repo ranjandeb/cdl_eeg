@@ -38,7 +38,8 @@ EEG_epochs = pop_epoch( EEG, unique(study_info.experimental_event_types),...
 % Initialize preprocessing info
 preprocessing_info.NoAtTrials(s)=0;
 preprocessing_info.MvmtTrials(s)=0;
-
+preprocessing_info.InitialNumTrials(s)=length(EEG_epochs.epoch);
+    
 % If epoching cuts through an interference event (because they can have a
 % long duration), the interference event does not appear in epochs after
 % the epoch it started in. This adds those interefence events back
@@ -47,6 +48,12 @@ for trl_idx=1:length(EEG_epochs.epoch)
     
     % Determine the event in this epoch that defines the trial
     ref_evt_idx=find(cell2mat(epoch.eventlatency)==0);
+    for j=1:length(ref_evt_idx)
+        if find(strcmp(study_info.experimental_event_types, epoch.eventtype{ref_evt_idx(j)}))
+            ref_evt_idx=ref_evt_idx(j);
+            break
+        end
+    end
     
     % Figure out the start of the trial relative to the start of the
     % unepoched data (in data points)
@@ -121,3 +128,6 @@ for k=1:length(bad_trials)
         end
     end
 end
+
+% Update preprocessing info - number of trials after marking bad
+preprocessing_info.PostVideoRejNumTrials(s)=length(EEG_epochs.epoch)-length(bad_trials);

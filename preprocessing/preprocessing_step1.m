@@ -203,34 +203,28 @@ for s=1:size(study_info.participant_info,1)
         
     end
     
-    % Save modified (final) channel locations
-    channel_location=EEG.chanlocs;
-    fname=fullfile(subject_output_data_dir, 'final_channel_locations.mat');
-    save(fname, 'channel_location');
-    
     % Save number of channels to preprocessing info
     preprocessing_info.NumChannels(s)=EEG.nbchan;
     
     % Remove channels marked as bad
-    nbchans=cell(1,EEG.nbchan);
+    BadChans={};
     for i=1:EEG.nbchan
-        nbchans{i}= EEG.chanlocs(i).labels;
+        chan_name= EEG.chanlocs(i).labels;
+        if strcmp(channels.status(find(strcmp(channels.name,chan_name))),'bad')
+            BadChans{end+1}=chan_name;
+        end            
     end
-    RemChans=channels.name(find(strcmp(channels.status,'bad')));
-    [~,chansidx] = ismember(RemChans, nbchans);
-    RemChans_Idx = chansidx(chansidx ~= 0);
-    EEG = eeg_checkset(EEG);
-    EEG = pop_select(EEG,'nochannel', RemChans_Idx);
-    [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, 0);
-    preprocessing_info.InitNumBadChannels(s)=length(RemChans_Idx);    
+    %RemChans=channels.name(find(strcmp(channels.status,'bad')));
+    %[~,chansidx] = ismember(RemChans, nbchans);
+    %RemChans_Idx = chansidx(chansidx ~= 0);
+    preprocessing_info.InitNumBadChannels(s)=length(BadChans);    
     
     % Run FASTER to find bad channels and reject
     list_properties = channel_properties(EEG, 1:EEG.nbchan, EEG.nbchan);
     FASTbadIdx=min_z(list_properties);
-    FASTbadChans=find(FASTbadIdx==1);
+    FASTbadChans={EEG.chanlocs(find(FASTbadIdx==1)).labels};
     preprocessing_info.FASTNumBadChannels(s)=length(FASTbadChans);
-    EEG = pop_select(EEG,'nochannel', FASTbadChans);
-    
+        
     % Save the bad channels in a separate file for each subject
     fname=fullfile(subject_output_data_dir,...
         sprintf('%s_Faster_Bad_Channels.mat',subject));
@@ -243,6 +237,15 @@ for s=1:size(study_info.participant_info,1)
     EEG = eeg_checkset(EEG);
     EEG = pop_select(EEG,'nochannel',{'Cz'});
     [ALLEEG, EEG, CURRENTSET] = eeg_store(ALLEEG, EEG, 0);
+    
+    % Save modified (final) channel locations
+    channel_location=EEG.chanlocs;
+    fname=fullfile(subject_output_data_dir, 'final_channel_locations.mat');
+    save(fname, 'channel_location');
+    
+    % Remove bad channels identified by status and FASTER
+    EEG = eeg_checkset(EEG);
+    EEG = pop_select(EEG,'nochannel', union(BadChans, FASTbadChans));    
     
     % Give a name to the dataset and save
     EEG = eeg_checkset(EEG);

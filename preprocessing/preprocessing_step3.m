@@ -24,7 +24,7 @@ for s=1:size(study_info.participant_info,1)
     fprintf('\n\n\n*** Processing subject %d (%s) ***\n\n\n', s, subject);
     
     % Load final channel locations
-    load(subject_output_data_dir, 'final_channel_locations.mat');
+    load(fullfile(subject_output_data_dir, 'final_channel_locations.mat'));
     
     % go through experimental and baseline condition separately
     for trl_type = 1:length(study_info.trial_type) 
@@ -123,9 +123,13 @@ for s=1:size(study_info.participant_info,1)
 
             %% Loop through each epoch, select it, run interp, save data
             for e = 1:EEG.trials
-                %% select only this epoch (e)
-                EEGe = pop_selectevent(EEG, 'epoch', e, 'deleteevents',...
-                    'off', 'deleteepochs', 'on', 'invertepochs', 'off');
+                if EEG.trials>1
+                    %% select only this epoch (e)
+                    EEGe = pop_selectevent(EEG, 'epoch', e, 'deleteevents',...
+                        'off', 'deleteepochs', 'on', 'invertepochs', 'off');
+                else
+                    EEGe=EEG;
+                end
                 % find which channels are bad for this epoch
                 badChanNum = find(badChans(:,e)==1); 
                 % interpolate the bad chans for this epoch
@@ -153,8 +157,10 @@ for s=1:size(study_info.participant_info,1)
 
             %% Delete the epochs in which more than 10% channels were
             % interpolated
-            EEG = pop_rejepoch(EEG, badepoch, 0);
-            [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+            if length(badepoch)<EEG.trials
+                EEG = pop_rejepoch(EEG, badepoch, 0);
+                [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+            end
 
         else
             EEG = eeg_checkset(EEG);
@@ -181,7 +187,7 @@ for s=1:size(study_info.participant_info,1)
         base_name=sprintf('%s_09_Referenced_Epoched_%s',...
             subject, study_info.trial_type{trl_type});
         EEG = pop_editset(EEG, 'setname', base_name);
-        EEG = pop_saveset(EEG, 'filename', sprintf('%s.set', base_name,...
+        EEG = pop_saveset(EEG, 'filename', sprintf('%s.set', base_name),...
             'filepath', subject_output_data_dir);
         [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
         
@@ -194,10 +200,6 @@ end
 if strcmp(study_info.baseline_type,'epoch_matched')
     preprocessing_info=matching_markers(study_info, preprocessing_info);
 end
-
-% Figure out number of trials per condition
-preprocessing_info=compute_trials_per_condition(study_info,...
-    preprocessing_info);
 
 writetable(preprocessing_info, fullfile(study_info.output_dir,...
     'preprocessing_info.csv'));
