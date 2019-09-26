@@ -6,10 +6,10 @@ if exist(output_dir,'dir')~=7
     mkdir(output_dir);
 end
 
-baseline_max_abs=-Inf;
-comparison_max_abs=-Inf;
-
 for clus_idx=1:length(study_info.clusters)
+    
+    baseline_max_abs=-Inf;
+    comparison_max_abs=-Inf;
     for cond = 1:length(study_info.experimental_conditions)
         fname=fullfile(data_dir, sprintf('time_freqs_significance_%s_%s_%s.mat', study_info.baseline_normalize, study_info.experimental_conditions{cond}, study_info.clusters(clus_idx).name));
         load(fname);
@@ -20,13 +20,9 @@ for clus_idx=1:length(study_info.clusters)
             comparison_max_abs=max([comparison_max_abs max(abs(tf_signif(:)))]);
         end
     end
-    
-end
-baseline_clim=[-baseline_max_abs baseline_max_abs];
-comparison_clim=[-comparison_max_abs comparison_max_abs];
+    baseline_clim=[-baseline_max_abs baseline_max_abs];
+    comparison_clim=[-comparison_max_abs comparison_max_abs];
 
-for clus_idx=1:length(study_info.clusters)
-    
     n_conditions=length(study_info.experimental_conditions);
     
     fig=figure();
@@ -37,8 +33,7 @@ for clus_idx=1:length(study_info.clusters)
         
         % tftopo(tf_signif, times, freqs, 'mode', 'ave', 'limits',[time2plot freq2plot lim]);
         contourf(time, frequency, tf_signif, 20,'linecolor','none');
-        %set(gca, 'ylim', freq2plot, 'xlim', time2plot, 'clim', lim_obg);
-        set(gca, 'clim', baseline_clim);
+        set(gca, 'ylim', study_info.freq2plot, 'xlim', study_info.time2plot, 'clim', baseline_clim);
         set(gca,'FontName','Arial', 'FontSize', 12);
         title(sprintf('%s: %s', study_info.clusters(clus_idx).name, study_info.experimental_conditions{cond}), 'FontName','Arial', 'FontSize', 14, 'FontWeight', 'normal');
         ylabel ('Frequency (Hz)')
