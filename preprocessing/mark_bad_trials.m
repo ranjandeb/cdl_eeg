@@ -19,10 +19,12 @@ function [EEG, preprocessing_info]=mark_bad_trials(study_info, s,...
 
 % Mark bad if percentage of time in trial not attending to screen exceeds
 % this (0 if must attend for whole trial)
-noat_perc_thresh=20;
+%noat_perc_thresh=20;
+noat_perc_thresh=0;
 % Mark bad if percentage of time in trial moving exceeds this (0 no
 % movements allowed)
-mvmt_perc_thresh=10;
+%mvmt_perc_thresh=10;
+mvmt_perc_thresh=0;
 
 % List of indices of bad trials
 bad_trials=[];
@@ -107,11 +109,11 @@ for trl_idx=1:length(EEG_epochs.epoch)
     end
     
     % Bad trial if NOAT time exceeds threshold
-    if noat_time/(epoch_dur_s*1000)*100>=noat_perc_thresh
+    if noat_time/(epoch_dur_s*1000)*100>noat_perc_thresh
         preprocessing_info.NoAtTrials(s)=preprocessing_info.NoAtTrials(s)+1;
         bad_trials(end+1)=trl_idx;
     % Bad trial if MVMT time exceeds threshold
-    elseif mvmt_time/(epoch_dur_s*1000)*100>=mvmt_perc_thresh
+    elseif mvmt_time/(epoch_dur_s*1000)*100>mvmt_perc_thresh
         preprocessing_info.MvmtTrials(s)=preprocessing_info.MvmtTrials(s)+1;
         bad_trials(end+1)=trl_idx;
     end
