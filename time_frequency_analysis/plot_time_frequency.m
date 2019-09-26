@@ -6,21 +6,17 @@ if exist(output_dir,'dir')~=7
     mkdir(output_dir);
 end
 
-max_abs=-Inf;
-
 for clus_idx=1:length(study_info.clusters)
+    
+    max_abs=-Inf;
     for cond = 1:length(study_info.experimental_conditions)
         fname = fullfile(data_dir, sprintf('time_freqs_%s_%s_%s.mat', study_info.baseline_normalize, study_info.experimental_conditions{cond}, study_info.clusters(clus_idx).name));
         load(fname);
         mean_tf=mean(timefreqs_data,3);
         max_abs=max([max_abs max(abs(mean_tf(:)))]);
     end
-    
-end
-clim=[-max_abs max_abs];
+    clim=[-max_abs max_abs];
 
-for clus_idx=1:length(study_info.clusters)
-    
     n_conditions=length(study_info.experimental_conditions);
     
     fig=figure();
