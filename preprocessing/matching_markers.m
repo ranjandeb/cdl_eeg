@@ -74,7 +74,7 @@ for s=1:size(study_info.participant_info,1)
     [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
     
     % Delete all unrelated markerss
-    EEG_base = pop_selectevent( EEG_base, 'type',all_match_base_markers,...
+    EEG_base = pop_selectevent( EEG_base, 'type', study_info.all_match_base_markers,...
         'deleteevents','on');
     EEG=EEG_base;
     
