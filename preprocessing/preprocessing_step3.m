@@ -101,8 +101,10 @@ for s=1:size(study_info.participant_info,1)
                     EEG.xmin, EEG.xmax,0,0);
                 EEG = eeg_checkset(EEG);
                 EEG = eeg_rejsuperpose(EEG, 1, 1, 1, 1, 1, 1, 1, 1);
-                EEG = pop_rejepoch(EEG, (EEG.reject.rejthresh) ,0);
-                [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+                if EEG.trials>1
+                    EEG = pop_rejepoch(EEG, (EEG.reject.rejthresh) ,0);
+                    [ALLEEG, EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+                end
             end
 
             %% Interpolate artifacted data for all reaming channels
