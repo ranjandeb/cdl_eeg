@@ -1,7 +1,7 @@
 function [excluded, included]=exclude_subjects(study_info, excluded,...
     included)
 
-min_trials_per_condition=5;
+min_trials_per_condition=10;
 
 preprocessing_info=readtable(fullfile(study_info.output_dir,...
     'preprocessing_info.csv'));
