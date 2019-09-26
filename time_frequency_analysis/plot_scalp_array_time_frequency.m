@@ -79,17 +79,17 @@ for cond_idx=1:length(study_info.experimental_conditions)
         chan_mean_ersp{cond_idx,c}=squeeze(cond_ersp(:,:,c,:));   
     end
 end
-chan_p_vals={};
-for c=1:length(channel_location)
-    [pcond, pgroup, pinter, statscond, statsgroup, statsinter] = std_stat(chan_mean_ersp(:,c), 'paired', {'on'}, 'condstats', 'on', 'correctm', 'fdr');
-    chan_p_vals{c}=pcond{1};
-end
+% chan_p_vals={};
+% for c=1:length(channel_location)
+%     [pcond, pgroup, pinter, statscond, statsgroup, statsinter] = std_stat(chan_mean_ersp(:,c), 'paired', {'on'}, 'condstats', 'on', 'correctm', 'fdr');
+%     chan_p_vals{c}=pcond{1};
+% end
 
 %clim=[-max(abs(cond_mean_ersp(:))) max(abs(cond_mean_ersp(:)))];
 %clim=[min(cond_mean_ersp(:)) max(cond_mean_ersp(:))];
 
 for cond_idx=1:length(study_info.experimental_conditions)
-    figure();
+    fig=figure();
     gcapos = get(gca,'Position'); axis off;
     PLOT_WIDTH    = gcapos(3)*DEFAULT_PLOT_WIDTH; % width and height of gca plot array on gca
     PLOT_HEIGHT   = gcapos(4)*DEFAULT_PLOT_HEIGHT;
@@ -115,32 +115,36 @@ for cond_idx=1:length(study_info.experimental_conditions)
         ylabel(channames(c,:));
         Axes = [Axes ax];        
     end
+    saveas(fig, fullfile(study_info.output_dir, 'figures', sprintf('Scalp_TF_%s.png',study_info.experimental_conditions{cond_idx}))); 
+    saveas(fig, fullfile(study_info.output_dir, 'figures', sprintf('Scalp_TF_%s.eps',study_info.experimental_conditions{cond_idx})),'epsc');
 end
 
-figure();
-gcapos = get(gca,'Position'); axis off;
-PLOT_WIDTH    = gcapos(3)*DEFAULT_PLOT_WIDTH; % width and height of gca plot array on gca
-PLOT_HEIGHT   = gcapos(4)*DEFAULT_PLOT_HEIGHT;
-axheight = DEFAULT_AXHEIGHT*(gcapos(4)*1.25);
-axwidth =  DEFAULT_AXWIDTH*(gcapos(3)*1.3);
-
-cond_xvals = gcapos(1)+gcapos(3)/2+PLOT_WIDTH*xvals;   % controls width of plot
-cond_yvals = gcapos(2)+gcapos(4)/2+PLOT_HEIGHT*yvals;  % controls height of plot
-
-Axes = [];
-for c=1:length(channel_location), %%%%%%%% for each data channel %%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    xcenter = cond_xvals(c); if isnan(xcenter), xcenter = 0.5; end; 
-    ycenter = cond_yvals(c); if isnan(ycenter), ycenter = 0.5; end;
-    ax=axes('Units','Normal','Position', ...
-        [xcenter-axwidth/2 ycenter-axheight/2 axwidth axheight]);
-    axis('off');
-    p_vals=chan_p_vals{c};
-    colormap(flipud(colormap('hot')));
-    imagesc(time(time_idx)./1000.0,frequency,p_vals,[0 0.05]);
-    set(gca,'ydir','normal');
-    hold on;
-    plot([0 0], [frequency(1) frequency(end)], 'w--');
-    ylabel(channames(c,:));
-    Axes = [Axes ax];        
-end
+% fig=figure();
+% gcapos = get(gca,'Position'); axis off;
+% PLOT_WIDTH    = gcapos(3)*DEFAULT_PLOT_WIDTH; % width and height of gca plot array on gca
+% PLOT_HEIGHT   = gcapos(4)*DEFAULT_PLOT_HEIGHT;
+% axheight = DEFAULT_AXHEIGHT*(gcapos(4)*1.25);
+% axwidth =  DEFAULT_AXWIDTH*(gcapos(3)*1.3);
+% 
+% cond_xvals = gcapos(1)+gcapos(3)/2+PLOT_WIDTH*xvals;   % controls width of plot
+% cond_yvals = gcapos(2)+gcapos(4)/2+PLOT_HEIGHT*yvals;  % controls height of plot
+% 
+% Axes = [];
+% for c=1:length(channel_location), %%%%%%%% for each data channel %%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%     xcenter = cond_xvals(c); if isnan(xcenter), xcenter = 0.5; end; 
+%     ycenter = cond_yvals(c); if isnan(ycenter), ycenter = 0.5; end;
+%     ax=axes('Units','Normal','Position', ...
+%         [xcenter-axwidth/2 ycenter-axheight/2 axwidth axheight]);
+%     axis('off');
+%     p_vals=chan_p_vals{c};
+%     colormap(flipud(colormap('hot')));
+%     imagesc(time(time_idx)./1000.0,frequency,p_vals,[0 0.05]);
+%     set(gca,'ydir','normal');
+%     hold on;
+%     plot([0 0], [frequency(1) frequency(end)], 'w--');
+%     ylabel(channames(c,:));
+%     Axes = [Axes ax];        
+% end
+% saveas(fig, fullfile(study_info.output_dir, 'figures', 'Scalp_TF_ANOVA1.png')); 
+%     saveas(fig, fullfile(study_info.output_dir, 'figures', 'Scalp_TF_ANOVA1.eps'),'epsc');
