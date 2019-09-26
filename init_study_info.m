@@ -29,9 +29,6 @@ study_info.impedance_threshold=50;
 %% Remove data before last boundary event
 study_info.remove_before_last_boundary=false;
 
-%% Remove data before last boundary event
-study_info.remove_before_last_boundary=false;
-
 %% Cap remove event
 study_info.cap_remove_event='net';
 
@@ -40,7 +37,7 @@ study_info.cap_remove_event='net';
 study_info.EGI_AATF = 112; 
 
 %% Delete outerlayer of the channels in infants data
-study_info.delete_outlyr = 'yes'; % yes||no, requires answer
+study_info.delete_outlyr = 'no'; % yes||no, requires answer
 
 %% Initialize filters
 study_info.highpass = 0.3;
@@ -105,11 +102,12 @@ study_info.experimental_event_types = {'Stm+','Stm+','Stm+'};
 study_info.experimental_event_condition_fields = {'Emotion','Emotion','Emotion'};
 % for each experimental condition, the value of the event field
 study_info.experimental_event_condition_field_values = {'a', 'h', 'n'};
-% Define epoch length in seconds (e.g. length is -0.8s to 2.5s)
-study_info.epoch_length_experimental=[-0.8 2.5];
+% Define epoch length in seconds (e.g. length is -0.8s to 2.5s, added 
+% 1s to include ITI)
+study_info.epoch_length_experimental=[-0.8 3.5];
 % define longer experimental epoch to take into account TFR data loss at
 % edges
-study_info.extended_epoch_length_experimental = [-1.8 3.5];
+study_info.extended_epoch_length_experimental = [-1.8 4.5];
 
 % % define interference markers
 study_info.interference_markers = {'NOAT', 'MVMT'};
@@ -149,10 +147,11 @@ study_info.all_match_base_markers = {};
 %% Paths to CSD toolbox and EEGLab
 addpath(genpath('/home/jbonaiuto/Apps/CSDtoolbox'));   % Point to place where you put CSDToolbox
 
-study_info.current_montage_path = '/data2/empathy_eeg/GSN-HydroCel-104.csd';
+%study_info.current_montage_path = '/data2/empathy_eeg/GSN-HydroCel-104.csd';
+study_info.current_montage_path = '/data2/empathy_eeg/GSN-HydroCel-128.csd';
 
 %% for Time-Frequency Analysis
-study_info.baseline_woi = [-0.8 0];
+study_info.baseline_woi = [3.0 3.5]; % Last 500ms of ITI
 
 % if you want a different range here make sure to checke the Time Frequency
 % script --> adjust wavelet cycle
@@ -169,61 +168,66 @@ study_info.freq_space='linear';
 study_info.tf_exclude_subjects={'exclude_subjects'};
 
 % Can be 'within_condition', 'single_trial', or 'across_condition'
-study_info.baseline_normalize = 'within_condition';
+study_info.baseline_normalize = 'across_condition';
 
 % List of electrode clusters - cluster name and list of channel names
 study_info.clusters=[];
 study_info.clusters(1).name='C3';
-study_info.clusters(1).channels={'E29', 'E30', 'E35', 'E36', 'E37', 'E41', 'E42'};
+%study_info.clusters(1).channels={'E30', 'E31', 'E36', 'E37', 'E41', 'E42', 'E53', 'E54'};
+study_info.clusters(1).channels={'E29', 'E30', 'E35', 'E36', 'E37', 'E40', 'E41', 'E42', 'E47'};
 study_info.clusters(2).name='C4';
-study_info.clusters(2).channels={'E87', 'E93', 'E103', 'E104', 'E105', 'E110', 'E111'};
-study_info.clusters(1).name='C3';
-study_info.clusters(1).channels={'E29', 'E30', 'E35', 'E36', 'E37', 'E41', 'E42', 'E87', 'E93', 'E103', 'E104', 'E105', 'E110', 'E111'};
+%study_info.clusters(2).channels={'E79', 'E80', 'E86', 'E87', 'E93', 'E103', 'E104', 'E105'};
+study_info.clusters(2).channels={'E87', 'E93', 'E98', 'E103', 'E104', 'E105', 'E109', 'E110', 'E111'};
+% study_info.clusters(3).name='C';
+% study_info.clusters(3).channels={'E29', 'E30', 'E35', 'E36', 'E37', 'E41', 'E42', 'E87', 'E93', 'E103', 'E104', 'E105', 'E110', 'E111'};
 study_info.clusters(3).name='F3';
+%study_info.clusters(3).channels={'E19', 'E20', 'E23', 'E24', 'E27', 'E28'};
 study_info.clusters(3).channels={'E19', 'E20', 'E23', 'E24', 'E27', 'E28'};
 study_info.clusters(4).name='F4';
 study_info.clusters(4).channels={'E3', 'E4', 'E117', 'E118', 'E123', 'E124'};
-study_info.clusters(3).name='F';
-study_info.clusters(3).channels={'E19', 'E20', 'E23', 'E24', 'E27', 'E28', 'E3', 'E4', 'E117', 'E118', 'E123', 'E124'};
+% study_info.clusters(6).name='F';
+% study_info.clusters(6).channels={'E19', 'E20', 'E23', 'E24', 'E27', 'E28', 'E3', 'E4', 'E117', 'E118', 'E123', 'E124'};
 study_info.clusters(5).name='P3';
-study_info.clusters(5).channels={'E47', 'E51', 'E52', 'E53', 'E59', 'E60'};
+%study_info.clusters(5).channels={'E47', 'E51', 'E52', 'E53', 'E59', 'E60'};
+study_info.clusters(5).channels={'E51', 'E52', 'E53', 'E59', 'E60'};
 study_info.clusters(6).name='P4';
-study_info.clusters(6).channels={'E85', 'E86', 'E91', 'E92', 'E97', 'E98'};
-study_info.clusters(5).name='P';
-study_info.clusters(5).channels={'E47', 'E51', 'E52', 'E53', 'E59', 'E60', 'E85', 'E86', 'E91', 'E92', 'E97', 'E98'};
+%study_info.clusters(6).channels={'E85', 'E86', 'E91', 'E92', 'E97', 'E98'};
+study_info.clusters(6).channels={'E85', 'E86', 'E91', 'E92', 'E97'};
+% study_info.clusters(9).name='P';
+% study_info.clusters(9).channels={'E47', 'E51', 'E52', 'E53', 'E59', 'E60', 'E85', 'E86', 'E91', 'E92', 'E97', 'E98'};
 study_info.clusters(7).name='O1';
-study_info.clusters(7).channels={'E66', 'E69', 'E70', 'E71', 'E74'};
+%study_info.clusters(7).channels={'E69', 'E70', 'E73', 'E74'};
+%study_info.clusters(7).channels={'E69', 'E70', 'E74'};
+study_info.clusters(7).channels={'E66','E69', 'E70', 'E71', 'E74'};
 study_info.clusters(8).name='O2';
+%study_info.clusters(8).channels={'E83', 'E82', 'E89'};
 study_info.clusters(8).channels={'E76', 'E82', 'E83', 'E84', 'E89'};
-study_info.clusters(7).name='O';
-study_info.clusters(7).channels={'E66', 'E69', 'E70', 'E71', 'E74', 'E76', 'E82', 'E83', 'E84', 'E89'};
+% study_info.clusters(12).name='O';
+% study_info.clusters(12).channels={'E66', 'E69', 'E70', 'E71', 'E74', 'E76', 'E82', 'E83', 'E84', 'E89'};
     
 % Name and frequency ranges of frequency bands to analyze
 study_info.freq_bands=[];
-study_info.freq_bands(1).name='mu';
+study_info.freq_bands(1).name='infant alpha';
 study_info.freq_bands(1).foi=[6 9];
-study_info.freq_bands(2).name='beta';
-study_info.freq_bands(2).foi=[10 17];
-study_info.freq_bands(2).name='theta';
-study_info.freq_bands(2).foi=[3 5];
+study_info.freq_bands(2).name='adult alpha';
+study_info.freq_bands(2).foi=[8 13];
+study_info.freq_bands(3).name='beta';
+study_info.freq_bands(3).foi=[13 30];
+study_info.freq_bands(4).name='theta';
+study_info.freq_bands(4).foi=[3 5];
 
 %% for Topoplot
-% Time bins
-% if you have more than 20 time windows adjust in the script
-% subplot(4,5,ti)
-time_windows = [ -1500 -1000; -1000 -500; -500 0; 0 500];
-% standardize axis
-clim       = [ -1.5  1.5 ];
+% Time bins to plot
+study_info.topoplot_woi = [-500 0;0 500; 500 1000; 1000 1500; 1500 2000;2000 2500];
 
 %% for TFR plot
 % plot frequency limits
-study_info.freq2plot=[3 20];
-study_info.time2plot=[-800 1000];
+study_info.freq2plot=[3 30];
+study_info.time2plot=[-500 2500];
 
-%% for Writing data in text file
-
-% Text file name
-textfile='PtSdataVisit1_1500.500_EG.txt';
+%% for ERD plot
+% Time bins to plot
+study_info.erdplot_woi = [-500 0;0 500; 500 1000; 1000 1500; 1500 2000;2000 2500];
 
 %%
 eeglab;
