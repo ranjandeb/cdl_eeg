@@ -58,8 +58,8 @@ for s=1:size(study_info.participant_info,1)
                 'filepath', subject_output_data_dir);
         end
     
-        cond_epochs=[];
         for cond_idx=1:length(study_info.experimental_conditions)
+            cond_epochs=[];
             for epoch_idx=1:length(EEG.epoch)
                 epoch=EEG.epoch(epoch_idx);
                 ref_evt_idx=find(cell2mat(epoch.eventlatency)==0);
@@ -215,17 +215,15 @@ for s=1:size(study_info.participant_info,1)
                 save_name = fullfile(tf_output_dir, sprintf('%s_timefreqs_%s_%s.mat', subject, study_info.baseline_normalize, study_info.experimental_conditions{cond_idx}));
                 save(save_name, 'timefreqs_data', 'time', 'frequency', 'channel_location', '-v7.3');
                 clear base_tempow_avgtrl cond_tempow_avgtrl cond_tfreqs timefreqs_data time frequency
+            elseif strcmp(study_info.baseline_normalize, 'across_condition')
+                %% power data of all conditions            
+                Condspecific.(study_info.experimental_conditions{cond_idx}).cond_tf_data=cond_tf_data;
+                if strcmp(study_info.baseline_type,'epoch_matched')
+                    Condspecific.(study_info.experimental_conditions{cond_idx}).base_tf_data =base_tf_data;
+                end
+                clear base_trial_data base_trial_data_conv base_temppow base_timefreqs base_tf_data ...
+                    tf_data cond_trial_data cond_trial_data_conv cond_temppow cond_timefreqs cond_tf_data
             end
-            
-            %% power data of all conditions
-            
-            Condspecific.(study_info.experimental_conditions{cond_idx}).cond_tf_data=cond_tf_data;
-            if strcmp(study_info.baseline_type,'epoch_matched')
-                Condspecific.(study_info.experimental_conditions{cond_idx}).base_tf_data =base_tf_data;
-            end
-            
-            clear base_trial_data base_trial_data_conv base_temppow base_timefreqs base_tf_data ...
-                tf_data cond_trial_data cond_trial_data_conv cond_temppow cond_timefreqs cond_tf_data
         end
         
         
@@ -234,20 +232,19 @@ for s=1:size(study_info.participant_info,1)
         if strcmp(study_info.baseline_normalize, 'across_condition')
             
             base_temppow_avgtrl=[];
-            start_t_idx=1;
             for cond = 1:length(study_info.experimental_conditions)
                 if strcmp(study_info.baseline_type,'epoch_matched')
-                    base_tf_data=Condspecific.(study_info.experimental_conditions{cond}).base_tf_data;
-                    base_temppow_avgtrl(:,:,start_t_idx:start_t_idx+size(base_tf_data,3)-1,:) = base_tf_data;                
-                    start_t_idx=start_t_idx+size(base_tf_data,3);
+                    base_tf_data=Condspecific.(study_info.experimental_conditions{cond}).base_tf_data(:,basetimeidx(1):basetimeidx(end),:,:);
+                    base_temppow_avgtrl(end+1:end+size(base_tf_data,3),:,:,:) = permute(base_tf_data,[3 1 2 4]);                
+                    clear base_tf_data;
                 else
-                    base_tf_data=Condspecific.(study_info.experimental_conditions{cond}).cond_tf_data;
-                    base_temppow_avgtrl(:,:,start_t_idx:start_t_idx+size(base_tf_data,3)-1,:) = base_tf_data;                
-                    start_t_idx=start_t_idx+size(base_tf_data,3);
+                    base_tf_data=Condspecific.(study_info.experimental_conditions{cond}).cond_tf_data(:,basetimeidx(1):basetimeidx(end),:,:);
+                    base_temppow_avgtrl(end+1:end+size(base_tf_data,3),:,:,:) = permute(base_tf_data,[3 1 2 4]);                
+                    clear base_tf_data;
                 end
             end
             
-            base_temppow_avgtrl = squeeze(mean(base_temppow_avgtrl, 3));
+            base_temppow_avgtrl = squeeze(mean(base_temppow_avgtrl, 1));
             
             for cond = 1:length(study_info.experimental_conditions)
                 cond_tf_temppow = squeeze(mean(Condspecific.(study_info.experimental_conditions{cond}).cond_tf_data,3));
@@ -256,7 +253,7 @@ for s=1:size(study_info.participant_info,1)
                 timefreqs_data = zeros(length(frex),nData,EEG_cond.nbchan);
                 for ch=1:EEG_cond.nbchan
                     for fi=1:length(frex)
-                        timefreqs_data(fi,:,ch) = 10*log10( cond_tf_temppow(fi,:,ch) ./ mean(base_temppow_avgtrl(fi,basetimeidx(1):basetimeidx(end), ch),2) );
+                        timefreqs_data(fi,:,ch) = 10*log10( cond_tf_temppow(fi,:,ch) ./ mean(base_temppow_avgtrl(fi,:, ch),2) );
                     end
                 end
                 
