@@ -24,7 +24,7 @@ for chan=1:length(Channels)
     
     %% Change zeros(size(tf_data)if you want to test against another
     % condition
-    tf_data_pvals = std_stat({ cond1_data cond2_data }', 'method', 'permutation', 'condstats', 'on', 'correctm', 'fdr');
+    tf_data_pvals = std_stat({ cond1_data cond2_data }', 'method', 'permutation', 'condstats', 'on', 'mcorrect', 'fdr');
     tf_signif = mean(cond1_data,3);
     tf_signif(tf_data_pvals{1} > 0.05) = 0;
     
