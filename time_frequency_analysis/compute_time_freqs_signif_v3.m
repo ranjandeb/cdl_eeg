@@ -21,7 +21,7 @@ for condi=Condition_Name{2}
     
         % Change zeros(size(tf_data)if you want to test against another
         % condition
-        tf_data_pvals = std_stat({ tf_data zeros(size(tf_data)) }', 'method', 'permutation', 'naccu', 1000, 'condstats', 'on', 'correctm', 'fdr');
+        tf_data_pvals = std_stat({ tf_data zeros(size(tf_data)) }', 'method', 'permutation', 'naccu', 1000, 'condstats', 'on', 'mcorrect', 'fdr');
         tf_signif = mean(tf_data,3);
         tf_signif(tf_data_pvals{1} > 0.05) = 0;
 
