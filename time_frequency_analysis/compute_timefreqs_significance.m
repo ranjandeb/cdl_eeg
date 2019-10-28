@@ -11,7 +11,7 @@ for cond = 1:length(study_info.experimental_conditions)
     
         % Change zeros(size(tf_data)if you want to test against another
         % condition
-        tf_pvals = std_stat({ timefreqs_data zeros(size(timefreqs_data)) }', 'paired', {'on'}, 'method', 'permutation', 'naccu', 1000, 'condstats', 'on', 'correctm', 'fdr');
+        tf_pvals = std_stat({ timefreqs_data zeros(size(timefreqs_data)) }', 'paired', {'on'}, 'method', 'permutation', 'naccu', 1000, 'condstats', 'on', 'mcorrect', 'fdr');
         tf_signif = mean(timefreqs_data,3);
         tf_signif(tf_pvals{1} > 0.05) = 0;
 

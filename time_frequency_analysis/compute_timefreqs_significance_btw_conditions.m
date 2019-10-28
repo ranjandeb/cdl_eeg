@@ -14,7 +14,7 @@ for cond1 = 1:length(study_info.experimental_conditions)
             load(fname)
             cond2_data=timefreqs_data;
                         
-            tf_pvals = std_stat({ cond1_data cond2_data }', 'paired', {'on'}, 'method', 'permutation', 'condstats', 'on', 'correctm', 'fdr');
+            tf_pvals = std_stat({ cond1_data cond2_data }', 'paired', {'on'}, 'method', 'permutation', 'condstats', 'on', 'mcorrect', 'fdr');
             tf_signif = mean(cond1_data,3)-mean(cond2_data,3);
             tf_signif(tf_pvals{1} > 0.05) = 0;
     
